@@ -94,7 +94,44 @@ public class DButil {
 			e.printStackTrace();
 			
 		}
-		return false;
-		
+		return false;		
+	}
+	
+	public static boolean userIsValid(Connection con,User user){
+		boolean result=false;
+		PreparedStatement pst= null; 
+		ResultSet rs;
+		try {
+			pst = (PreparedStatement) con.prepareStatement("SELECT * FROM tb_user WHERE user_id = ? AND password = ?");
+			pst.setString(1, user.getUser_id());
+			pst.setString(2, user.getPassword());
+			rs = (ResultSet) pst.executeQuery();
+			if (rs.next()) {
+				result=true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

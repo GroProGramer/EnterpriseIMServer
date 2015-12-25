@@ -31,6 +31,10 @@ public class HXUtil {
 		return deleteIMUserByUserNameNode;
 		
 	}
+	
+	public static ObjectNode userLogin(User user){
+		return EasemobIMUsers.imUserLogin(user.getUser_id(), user.getPassword());
+	}
 }
 
 

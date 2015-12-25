@@ -1,5 +1,7 @@
 package im.dao.impl;
 
+import im.bean.LoginResult;
+import im.bean.RegResult;
 import im.bean.User;
 import im.dao.UserDao;
 import im.util.Constants;
@@ -14,43 +16,54 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 
 public class UserDaoImpl implements UserDao {
 
 	@Override
-	public User register(User u) {
+	public RegResult register(User u) {
+		RegResult regResult=new RegResult();
 		String user_id;
 		Connection con = DButil.connect();
 		if(DButil.checkExistInDB(con, u)){
-			return null;
+			//return null;
+			regResult.setRegstatus(RegResult.RegStatus.UserHasExisted);
+			return regResult;
 		}
 		
 		
 		String sql = "insert into tb_user(user_id,password) values(?,?)";
-		//String deleteuser="delete from user where user_id=?";
-		//String sql2 = "select user_id from user";
+		
 		ObjectNode node=HXUtil.createSingleHXUser(u);
       if(node.get("statusCode").toString().equals("200")){//向环信注册成功
-    	  System.out.println(node.get("statusCode").toString());
+    	  //System.out.println(node.get("statusCode").toString());
 		try {
 			PreparedStatement ps = con.prepareStatement(sql);
 			ps.setString(1, u.getUser_id());
 			ps.setString(2, u.getPassword());
 			int res = ps.executeUpdate();
 			if (res > 0) {	
-				return u;
+				regResult.setRegstatus(RegResult.RegStatus.RegSucess);
+				return regResult;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			regResult.setRegstatus(RegResult.RegStatus.LocalDatabaseWrong);
 			HXUtil.deleteSingleHXUser(u);//本地数据库注册失败，则必须也将环信服务端的账号也删除
 		} finally {
 			DButil.close(con); 
 		}
-		return null;//向本地数据库注册用户失败
+		
+		return regResult;//向本地数据库注册用户失败
       }
-      else return null;//向环信注册用户失败
+      else {
+    	  regResult.setRegstatus(RegResult.RegStatus.HXDatabaseWrong);
+    	  return regResult;//向环信注册用户失败
+      }
 	}
 
 	/*@Override
@@ -303,10 +316,29 @@ public class UserDaoImpl implements UserDao {
 		return null;
 	}
 
+	@SuppressWarnings("null")
 	@Override
-	public ArrayList<User> login(User u) {
+	public LoginResult login(User u) {
 		// TODO Auto-generated method stub
-		return null;
+		LoginResult result = new LoginResult();
+		Connection con = DButil.connect();
+		try{
+		  if(DButil.checkExistInDB(con, u)==false){
+			//return null;
+			  result.setLoginStatus(LoginResult.ResultCode.UserNotExisted);
+		  }
+		  if(!DButil.userIsValid(con, u)){
+			  result.setLoginStatus(LoginResult.ResultCode.UserNameOrPassswordWrong);
+		  }
+		  JsonNode node=(JsonNode) HXUtil.userLogin(u).get("statusCode");
+		  
+		  if("200".equals(node.toString())){
+			  result.setLoginStatus(LoginResult.ResultCode.LoginSucess);
+		  }
+		}finally{
+			DButil.close(con); 
+		}
+		return result;
 	}
 
 }
