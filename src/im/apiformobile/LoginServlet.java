@@ -70,6 +70,8 @@ public class LoginServlet extends HttpServlet {
 			
 			
 		}*/
+		request.getSession(true);
+		//session.setAttribute(user_id, session.getId());
 		result=UserDaoFactory.getInstance().login(user);
 		respString=JsonUtil.Object2JsonString(result);
 		PrintWriter out = null;
