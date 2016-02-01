@@ -1,11 +1,15 @@
 package im.util;
 
+import java.util.List;
+
 import im.bean.User;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import example.comm.Constants;
+import example.jersey.apidemo.EasemobChatGroups;
 import example.jersey.apidemo.EasemobIMUsers;
 
 public class HXUtil {
@@ -25,10 +29,34 @@ public class HXUtil {
 		return createNewIMUserSingleNode;
 	}
 	
+	public static ObjectNode createGroup(User user,String groupName,List<String> members){
+		ObjectNode dataObjectNode = JsonNodeFactory.instance.objectNode();
+		dataObjectNode.put("groupname", groupName);
+		dataObjectNode.put("desc", "");
+		dataObjectNode.put("approval", true);
+		dataObjectNode.put("public", true);
+		dataObjectNode.put("maxusers", 1000);
+		dataObjectNode.put("owner", user.getUser_id());
+		ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
+		for(String member:members){
+			arrayNode.add(member);
+		}
+		dataObjectNode.put("members", arrayNode);
+		ObjectNode creatChatGroupNode = EasemobChatGroups.creatChatGroups(dataObjectNode);
+		return creatChatGroupNode;
+		
+	}
+	
 	public static ObjectNode deleteSingleHXUser(User user){
 		
 		ObjectNode deleteIMUserByUserNameNode = EasemobIMUsers.deleteIMUserByUserName(user.getUser_id());
 		return deleteIMUserByUserNameNode;
+		
+	}
+	
+	public static ObjectNode deleteGroup(String toDelChatgroupid){
+		ObjectNode deleteChatGroupNode =  EasemobChatGroups.deleteChatGroups(toDelChatgroupid) ;
+		return deleteChatGroupNode;
 		
 	}
 	

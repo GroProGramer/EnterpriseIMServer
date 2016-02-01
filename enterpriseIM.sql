@@ -30,6 +30,7 @@ create table tb_group
 (
    id int(10) unsigned not null AUTO_INCREMENT,
    group_id varchar(50) unique not null,
+   group_name varchar(20) not null,
    creator_id varchar(40) not null,
    group_member_count int(10) unsigned,
    photo MEDIUMBLOB,

@@ -1,5 +1,7 @@
 package im.dao.impl;
 
+import im.bean.CreateGroupResult;
+import im.bean.CreateGroupResult.CreateStatus;
 import im.bean.LoginResult;
 import im.bean.RegResult;
 import im.bean.User;
@@ -27,7 +29,6 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public RegResult register(User u) {
 		RegResult regResult=new RegResult();
-		String user_id;
 		Connection con = DButil.connect();
 		if(DButil.checkExistInDB(con, u)){
 			//return null;
@@ -340,5 +341,43 @@ public class UserDaoImpl implements UserDao {
 		}
 		return result;
 	}
+
+	@Override
+	public CreateGroupResult createGroup(User user, String groupName,List<String> members) {
+		// TODO Auto-generated method stub
+		CreateGroupResult result=new CreateGroupResult();
+		Connection con = DButil.connect();
+		String sql = "insert into tb_group(group_id,creator_id,group_name) values(?,?,?)";
+		ObjectNode node=HXUtil.createGroup(user, groupName,members);
+		String group_id;
+		if(node.get("statusCode").toString().equals("200")){//向环信注册成功
+			group_id=node.get("data").get("groupid").toString();
+			try {
+				PreparedStatement ps = con.prepareStatement(sql);
+				ps.setString(1, group_id);
+				ps.setString(2, user.getUser_id());
+				ps.setString(3, groupName);
+				int res = ps.executeUpdate();
+				if (res > 0) {	
+					result.setStatus(CreateStatus.Sucess);
+					return result;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				result.setStatus(CreateStatus.Failed);
+				HXUtil.deleteGroup(group_id);//本地数据库注册失败，则必须也将环信服务端的群组也删除
+			} finally {
+				DButil.close(con); 
+			}
+			
+			return result;//向本地数据库注册用户失败
+		}
+		else {
+			result.setStatus(CreateStatus.Failed);
+	    	  return result;//向环信注册用户失败
+	      }
+	}
+
+	
 
 }

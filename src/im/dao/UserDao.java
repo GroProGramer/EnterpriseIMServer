@@ -1,10 +1,12 @@
 package im.dao;
 
+import im.bean.CreateGroupResult;
 import im.bean.LoginResult;
 import im.bean.RegResult;
 import im.bean.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public interface UserDao {
@@ -15,4 +17,7 @@ public interface UserDao {
 
 	public ArrayList<User> refresh(int id);
 	public void logout(int id);
+	public CreateGroupResult createGroup(User user, String groupName, List<String> members);
+
+	
 }

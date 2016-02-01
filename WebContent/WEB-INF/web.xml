@@ -9,7 +9,6 @@
     <servlet-name>RegisterServlet</servlet-name>
     <url-pattern>/RegisterServlet</url-pattern>
   </servlet-mapping>
-  
   <servlet>
     <servlet-name>LoginServlet</servlet-name>
     <servlet-class>im.apiformobile.LoginServlet</servlet-class>
@@ -17,5 +16,14 @@
   <servlet-mapping>
     <servlet-name>LoginServlet</servlet-name>
     <url-pattern>/LoginServlet</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>CreateGroupServlet</servlet-name>
+    <servlet-class>im.apiformobile.CreateGroupServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CreateGroupServlet</servlet-name>
+    <url-pattern>/CreateGroupServlet</url-pattern>
   </servlet-mapping>
 </web-app>

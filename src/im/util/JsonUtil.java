@@ -15,4 +15,10 @@ public class JsonUtil {
 	   
 	   return node.get(key).toString();
    }
+   
+   public static Gson getGsonInstance(){
+       return gson;
+   }
 }
+
+  
