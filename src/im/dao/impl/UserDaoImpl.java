@@ -10,6 +10,7 @@ import im.util.Constants;
 import im.util.DButil;
 import im.util.DateUtil;
 import im.util.HXUtil;
+import im.util.JsonUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -336,6 +337,7 @@ public class UserDaoImpl implements UserDao {
 		  if("200".equals(node.toString())){
 			  result.setLoginStatus(LoginResult.ResultCode.LoginSucess);
 		  }
+		  result.setUser(DButil.getUserInfo(con, u.getUser_id()));
 		}finally{
 			DButil.close(con); 
 		}
@@ -376,6 +378,16 @@ public class UserDaoImpl implements UserDao {
 			result.setStatus(CreateStatus.Failed);
 	    	  return result;//向环信注册用户失败
 	      }
+	}
+
+	@Override
+	public User getUserInfo(String userId) {
+		// TODO Auto-generated method stub
+		User user=null;
+		Connection con = DButil.connect();
+		user=DButil.getUserInfo(con, userId);
+		DButil.close(con);
+		return user;
 	}
 
 	

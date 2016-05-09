@@ -18,6 +18,7 @@ public interface UserDao {
 	public ArrayList<User> refresh(int id);
 	public void logout(int id);
 	public CreateGroupResult createGroup(User user, String groupName, List<String> members);
+	public User getUserInfo(String userId);
 
 	
 }

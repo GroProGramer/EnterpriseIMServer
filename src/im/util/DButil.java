@@ -88,13 +88,42 @@ public class DButil {
 			 pst=(PreparedStatement) con.prepareStatement(sql);
 			 pst.setString(1, user.getUser_id());
 			 ResultSet rs = (ResultSet) pst.executeQuery();
-			 if(rs.next()) return true;
+			 if(rs.next()) {
+				 return true;
+			 }
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			
 		}
 		return false;		
+	}
+	
+	public static User getUserInfo(Connection con,String userId){
+		PreparedStatement pst= null; 
+		User user=null;
+		String sql="select * from  tb_user where user_id=?";
+		try {
+			 pst=(PreparedStatement) con.prepareStatement(sql);
+			 pst.setString(1,userId);
+			 ResultSet rs = (ResultSet) pst.executeQuery();
+			 if(rs.next()){
+				 user=new User();
+				 user.setUser_id(userId);
+				 user.setSex(rs.getString("sex"));
+				 user.setNickname(rs.getString("nickname"));
+				 user.setDescription(rs.getString("description"));
+				 if(user.getSex()==null){
+					 user.setSex("保密");
+				 }
+				 return user;
+			 }
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
+		return user;
 	}
 	
 	public static boolean userIsValid(Connection con,User user){
